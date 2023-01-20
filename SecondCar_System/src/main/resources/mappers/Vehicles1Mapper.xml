@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sdut.users.mapper.VehiclesMapper">
+    <insert id="addVehicles" parameterType="com.sdut.users.pojo.Vehicles">
+    insert into vehicle(Vehiclename, Vehicleprice, Vehiclecon,pic)
+    values(#{vehiclename},#{vehicleprice},#{vehiclecon},#{pic})
+
+    </insert>
+
+    <resultMap id="rMap_vehicle" type="com.sdut.users.pojo.Vehicles">
+        <id property="vehicleid" column="Vehicleid" ></id>
+        <result property="vehiclename" column="Vehiclename"></result>
+        <result property="vehicleprice" column="Vehicleprice"></result>
+        <result property="vehiclecon" column="Vehiclecon"></result>
+        <result property="shoppingstate" column="Shoppingstate"></result>
+        <result property="collectstate" column="Collectstate"></result>
+        <result property="pic" column="pic"></result>
+    </resultMap>
+
+<!--    分页查询-->
+    <select id="querySome"   resultMap="rMap_vehicle">
+        select * from vehicle
+    </select>
+
+<!--    名字查询-->
+    <select id="queryBy"  resultMap="rMap_vehicle">
+        select * from vehicle
+        <where>
+            <if test="vehiclename != null and vehiclename != ''">
+                Vehiclename like concat('%',#{vehiclename},'%')
+            </if>
+        </where>
+    </select>
+
+<!--删除-->
+    <delete id="delVehicleById" parameterType="int">
+        delete from vehicle where Vehicleid=#{vehicleid}
+    </delete>
+
+    <!--    根据id更新用户信息-->
+    <update id="updateVehicleById" parameterType="com.sdut.users.pojo.Vehicles">
+        update vehicle
+        set Vehiclename=#{vehiclename}, Vehicleprice=#{vehicleprice}, Vehiclecon=#{vehiclecon},pic=#{pic}
+        where Vehicleid = #{vehicleid}
+    </update>
+
+    <update id="updateCarShoppingStatus">
+        update vehicle set Shoppingstate = #{shoppingstate} where  Vehicleid = #{vehicleid}
+    </update>
+    <update id="updateCarc">
+        update vehicle set Collectstate = #{collectstate} where  Vehicleid = #{vehicleid}
+    </update>
+
+    <select id="querySome1"   resultMap="rMap_vehicle" >
+    select * from vehicle where Shoppingstate=1
+    </select>
+
+    <select id="querySome2"   resultMap="rMap_vehicle" >
+    select * from vehicle where Collectstate=1
+    </select>
+
+</mapper>

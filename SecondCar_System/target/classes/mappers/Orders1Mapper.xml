@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sdut.users.mapper.OrderMapper">
+    <insert id="addOrders" parameterType="Orders">
+    insert into tb_orders( tradetime, ordermoney, ordernote,Vehicleid)
+    values(#{tradetime},#{ordermoney},#{ordernote},0)
+    </insert>
+
+    <delete id="deleteorder" parameterType="com.sdut.users.pojo.Orders">
+        delete from tb_orders where or_id=#{or_id}
+    </delete>
+
+        <update id="updateorder" parameterType="com.sdut.users.pojo.Orders">
+            update tb_orders
+            set or_id=#{or_id},tradetime=#{tradetime}, ordermoney=#{ordermoney}, ordernote=#{ordernote}
+            where or_id = #{or_id}
+        </update>
+
+    <select id="queryUserById1" parameterType="int" resultType="com.sdut.users.pojo.Orders">
+        select
+            or_id as or_id, tradetime as tradetime, ordermoney as ordermoney, ordernote as ordernote
+
+        from tb_orders where or_id=#{or_id}
+    </select>
+
+    <select id="findByordername" parameterType="int"  resultMap="rMap_user">
+        select * from tb_orders where ordernote like '%${ordernote}%'
+    </select>
+
+    <resultMap id="rMap_user" type="com.sdut.users.pojo.Orders">
+        <id property="or_id" column="or_id"></id>
+        <result property="tradetime" column="tradetime"></result>
+        <result property="ordermoney" column="ordermoney"></result>
+        <result property="ordernote" column="ordernote"></result>
+    </resultMap>
+    <select id="queryUserById" parameterType="int"  resultMap="rMap_user">
+        select * from tb_orders where or_id=#{or_id}
+    </select>
+    <!--
+    start:代表每一页的起始位置 pageSize:每页最多显示的记录数
+    -->
+    <select id="querySome"  resultMap="rMap_user">
+        select * from tb_orders
+    </select>
+
+    <select id="querySomeorder"  resultMap="rMap_user">
+        select * from tb_orders
+        <where>
+            <if test="name != null and name != ''">
+                ordernote like concat('%',#{name},'%')
+            </if>
+        </where>
+        order by or_id DESC
+    </select>
+
+
+    <resultMap id="rMap_user_pic" type="com.sdut.users.pojo.Orders">
+        <!--property:类中属性  column:表中字段 如果有别名 按照别名-->
+        <id property="or_id" column="or_id"></id>
+        <result property="tradetime" column="tradetime"></result>
+        <result property="ordermoney" column="ordermoney"></result>
+        <result property="ordernote" column="ordernote"></result>
+    </resultMap>
+
+    <insert id="addOrdersBat">
+        insert into tb_orders (tradetime, ordermoney, ordernote)
+        <!--批量操作:collection:代表集合 因为传入的是list集合 所以固定写法写list
+        item:遍历每一次的时候提取出来的变量名字 separator:每一次循环和下一次循环之间的分隔符 union-->
+        <foreach collection="list" item="o" separator=" union ">
+            (select #{o.tradetime},#{o.ordermoney},#{o.ordernote})
+        </foreach>
+    </insert>
+
+    <select id="selecttb" resultType="HashMap">
+        select MONTH(tradetime) date,count(1) num from tb_orders group by MONTH(tradetime)
+    </select>
+
+    <select id="selecttb2" resultType="HashMap">
+        select MONTH(re_date) date,count(1) num from reviews group by MONTH(re_date)
+    </select>
+
+    <insert id="buyOrders">
+        insert into tb_orders(tradetime,Vehicleid,ordernote,ordermoney)
+        values (NOW(),#{vehicleid},#{ordernote},#{vehicleprice});
+    </insert>
+
+
+
+</mapper>

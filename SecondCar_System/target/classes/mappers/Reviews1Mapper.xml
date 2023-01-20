@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sdut.users.mapper.ReviewsMapper">
+    <!--增加评论信息-->
+    <insert id="addReviews" parameterType="com.sdut.users.pojo.Reviews">
+
+        <selectKey keyProperty="rv_id" resultType="int">
+            select  last_insert_id()
+        </selectKey>
+
+        insert into reviews(rv_id,rv_content,re_date)
+        values(#{rv_id},#{rv_content},#{re_date})
+        <!--#{uname}:当我们的参数是自定义类型的时候，其中uname一定来来类中的属性
+            user{
+                uname:
+            }
+            根据uname==>寻找 传入的对象所在类中的getter方法 getUname(),到对象中执行 把结果放到#{}
+        -->
+    </insert>
+
+    <resultMap id="rMap_reviews" type="com.sdut.users.pojo.Reviews">
+        <id property="rv_id" column="rv_id" ></id>
+        <result property="rv_content" column="rv_content"></result>
+        <result property="re_date" column="re_date"></result>
+    </resultMap>
+    <!--根据页数查询评论信息-->
+    <select id="querySome" resultMap="rMap_reviews">
+        select * from reviews
+    </select>
+    <!--根据content查询评论信息-->
+    <select id="queryReviewsInfo"  resultMap="rMap_reviews">
+        select * from reviews
+        <where>
+            <if test="rv_content != null and rv_content != ''">
+                rv_content like concat('%',#{rv_content},'%')
+            </if>
+        </where>
+    </select>
+    <!--获取所有评论信息-->
+    <select id="queryReviews" resultMap="rMap_reviews">
+        select * from reviews
+    </select>
+
+    <!--根据id删除评论信息-->
+    <delete id="deleteById">
+      delete from reviews where rv_id=#{id}
+    </delete>
+
+    <!--根据id更新评论信息-->
+    <update id="updateById" parameterType="com.sdut.users.pojo.Reviews">
+        update reviews
+        set rv_id=#{rv_id}, rv_content=#{rv_content}, re_date=#{re_date}
+        where rv_id = #{rv_id}
+    </update>
+
+</mapper>
