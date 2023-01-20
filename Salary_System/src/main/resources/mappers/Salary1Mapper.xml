@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.salarymanage.mapper.SalaryMapper">
+    <!--增加工资项目-->
+    <insert id="addSalary" parameterType="com.example.salarymanage.pojo.Salarys">
+        insert into salarys(sid, wage, welfare, reimburse, s_time, u_id)
+        values (#{sid}, #{wage}, #{welfare}, #{reimburse}, #{s_time}, #{id})
+    </insert>
+
+    <resultMap id="rMap_Salary" type="com.example.salarymanage.pojo.Salarys">
+        <id property="sid" column="sid"></id>
+        <result property="wage" column="wage"></result>
+        <result property="welfare" column="welfare"></result>
+        <result property="reimburse" column="reimburse"></result>
+        <result property="s_time" column="s_time"></result>
+        <result property="id" column="u_id"></result>
+    </resultMap>
+    <!--根据页数查询工资明细-->
+    <select id="querySome" resultMap="rMap_Salary">
+        select *
+        from salarys
+    </select>
+    <!--根据content查询工资明细-->
+    <select id="querySalaryInfo" resultMap="rMap_Salary">
+        select * from salarys
+        <where>
+            <if test="id != null and id != ''">
+                u_id like concat('%',#{id},'%')
+            </if>
+        </where>
+    </select>
+    <!--获取所有工资信息-->
+    <select id="querySalary" resultMap="rMap_Salary">
+        select *
+        from salarys
+    </select>
+
+    <!--根据id删除工资项目-->
+    <delete id="deleteById">
+        delete
+        from salarys
+        where u_id = #{id}
+    </delete>
+
+    <!--    根据id更新工资项目-->
+    <update id="updateById" parameterType="com.example.salarymanage.pojo.Salarys">
+        update salarys
+        set sid=#{sid},
+            wage=#{wage},
+            welfare=#{welfare},
+            reimburse=#{reimburse},
+            s_time=#{s_time},
+            u_id=#{id}
+        where sid = #{sid}
+    </update>
+
+    <select id="selecttb2" resultType="HashMap">
+        select MONTH (s_time) date, count(1) as snum
+        from salarys
+        group by MONTH (s_time)
+    </select>
+
+
+</mapper>

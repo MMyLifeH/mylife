@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.salarymanage.mapper.ReimBurseMapper">
+    <!--增加报销单-->
+    <insert id="addreimburse" parameterType="com.example.salarymanage.pojo.ReimBurses">
+        insert into reimburse(rid, office, room, eat, gasoline, r_time, sid)
+        values (#{rid}, #{office}, #{room}, #{eat}, #{gasoline}, #{r_time}, #{sid})
+    </insert>
+
+    <resultMap id="rMap_Reimburse" type="com.example.salarymanage.pojo.ReimBurses">
+        <id property="rid" column="rid"></id>
+        <result property="office" column="office"></result>
+        <result property="room" column="room"></result>
+        <result property="eat" column="eat"></result>
+        <result property="gasoline" column="gasoline"></result>
+        <result property="state_pass" column="state_pass"></result>
+        <result property="r_time" column="r_time"></result>
+        <result property="sid" column="sid"></result>
+    </resultMap>
+    <!--根据页数查询报销单-->
+    <select id="querySome" resultMap="rMap_Reimburse">
+        select *
+        from reimburse
+    </select>
+    <!--根据content查询报销单-->
+    <select id="getAll" resultMap="rMap_Reimburse">
+        select * from reimburse
+        <where>
+            <if test="rid != null and rid != ''">
+                rid like concat('%',#{rid},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--根据id删除报销单-->
+    <delete id="deleteById">
+        delete
+        from reimburse
+        where rid = #{rid}
+    </delete>
+
+    <!--    根据id更新报销单-->
+    <update id="updateById" parameterType="com.example.salarymanage.pojo.ReimBurses">
+        update reimburse
+        set rid=#{rid},
+            office=#{office},
+            room=#{room},
+            eat=#{eat},
+            gasoline=#{gasoline},
+            r_time=#{r_time},
+            sid=#{sid}
+        where rid = #{rid}
+    </update>
+
+    <!--    判断通过状态-->
+    <update id="updateState">
+        update reimburse,salarys
+        set state_pass = #{state_pass}, salarys.reimburse=reimburse.office+reimburse.room+reimburse.eat+reimburse.gasoline
+        where rid = #{rid} and reimburse.sid=salarys.sid
+    </update>
+
+    <select id="selecttb" resultType="HashMap">
+        select MONTH (r_time) date, count(1) as rnum
+        from reimburse
+        group by MONTH (r_time)
+    </select>
+
+
+</mapper>
